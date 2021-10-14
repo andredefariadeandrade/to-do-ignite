@@ -1,7 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 
+<<<<<<< HEAD
 const { v4: uuidv4, validate } = require('uuid');
+=======
+const { v4: uuidv4 } = require('uuid');
+>>>>>>> 778c29d9a80d5c9233d551b3afe2a1e7a1765fe7
 
 const app = express();
 
@@ -13,6 +17,7 @@ const users = [];
 function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers;
 
+<<<<<<< HEAD
   if(!username) return response.status(400).json({ error: 'username is required' });
 
   const usuario = users.find((usuario) => usuario.username === username);
@@ -62,6 +67,13 @@ function findUserById(request, response, next) {
   const usuario = users.find((usuario) => usuario.id === id);
   if (!user) return response.status(404).json({ error: 'user not found' });
 
+=======
+  const usuario = users.find(usuario => usuario.username === username);
+
+  if(!usuario){
+    return response.status(404).json({ message: "Username not found. "})
+  }
+>>>>>>> 778c29d9a80d5c9233d551b3afe2a1e7a1765fe7
   request.usuario = usuario;
 
   return next();
@@ -146,6 +158,7 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
+<<<<<<< HEAD
   const { usuario, todo } = request;
   const { id } = request.params;
   
@@ -172,3 +185,24 @@ module.exports = {
   checksTodoExists,
   findUserById
 };
+=======
+  const { usuario } = request;
+
+  const { id } = request.params;
+
+  const todoIndex = usuario.todos.findIndex(todo => todo.id === id);
+
+  if(todoIndex === -1){
+    return response.status(404).json({ error: "id not found. "})
+  }
+
+  users.todos.splice(todoIndex, -1);
+
+  return response.status(204).send();
+});
+
+app.listen(3333, () => {
+  console.log('Servidor On localhost:3333. ');
+})
+module.exports = app;
+>>>>>>> 778c29d9a80d5c9233d551b3afe2a1e7a1765fe7
