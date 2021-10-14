@@ -52,9 +52,9 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
-  const { title, deadline } = request.body;
-
   const { usuario } = request;
+
+  const { title, deadline } = request.body;
 
   const listaToDo = {
     id: uuidv4(),
@@ -69,22 +69,52 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
-  const { title, deadline} = request.body;
-
   const { usuario } = request;
 
-  usuario.title = title;
-  usuario.deadline = deadline;
+  const { title, deadline} = request.body;
+  const { id } = request.params;
 
-  return response.status(202).send();
+  const todo = usuario.todos.find(todo => todo.id === id);
+
+  if(!todo){
+    return response.status(404).json({ error: "id not found. "})
+  }
+
+  todo.title = title;
+  todo.deadline = new Date(deadline);
+
+  return response.status(202).json(todo);
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { usuario } = request;
+
+  const { id } = request.params;
+  const todo = usuario.todos.find(todo => todo.id === id);
+
+  if(!todo){
+    return response.status(404).json({error: "id not found. "})
+  }
+  todo.done = true;
+
+  return response.json(todo);
+  
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { usuario } = request;
+
+  const { id } = request.params;
+
+  const todoIndex = usuario.todos.findIndex(todo => todo.id === id);
+
+  if(todoIndex === -1){
+    return response.status(404).json({ error: "id not found. "})
+  }
+
+  users.todos.splice(todoIndex, -1);
+
+  return response.status(204).send();
 });
 
 app.listen(3333, () => {
